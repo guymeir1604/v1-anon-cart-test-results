@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V1 Optimizations — Test Plan Results</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; padding: 24px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 32px; }
+    header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    header p { color: #6e6e73; font-size: 14px; }
+
+    .stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-card { background: white; border-radius: 12px; padding: 20px 32px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); min-width: 140px; }
+    .stat-card .number { font-size: 36px; font-weight: 700; }
+    .stat-card .label { font-size: 13px; color: #6e6e73; margin-top: 4px; }
+    .stat-card.total .number { color: #1d1d1f; }
+    .stat-card.pass .number { color: #34c759; }
+    .stat-card.fail .number { color: #ff3b30; }
+    .stat-card.rate .number { color: #007aff; }
+
+    .progress-bar { background: #e5e5ea; border-radius: 8px; height: 12px; margin-bottom: 32px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, #34c759 75%, #ff3b30 75%); }
+
+    .section { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: hidden; }
+    .section-header { padding: 16px 20px; font-weight: 600; font-size: 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .section-header:hover { background: #fafafa; }
+    .section-header .badge { font-size: 12px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+    .badge-pass { background: #e8f9ee; color: #1b7d3a; }
+    .badge-fail { background: #ffeaea; color: #cc1818; }
+    .badge-mix { background: #fff8e6; color: #b8860b; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 10px 20px; font-size: 12px; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; background: #fafafa; border-bottom: 1px solid #f0f0f0; }
+    td { padding: 12px 20px; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: #fafafa; }
+
+    .status { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; font-size: 13px; padding: 4px 10px; border-radius: 6px; }
+    .status-pass { background: #e8f9ee; color: #1b7d3a; }
+    .status-fail { background: #ffeaea; color: #cc1818; }
+
+    .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; margin-left: 6px; }
+    .tag-bug { background: #ffeaea; color: #cc1818; }
+    .tag-not-impl { background: #fff3e0; color: #e65100; }
+
+    .finding { color: #6e6e73; font-size: 13px; }
+    .finding-fail { color: #cc1818; font-weight: 500; }
+
+    .footer { text-align: center; margin-top: 32px; color: #6e6e73; font-size: 12px; }
+
+    .toggle-icon { transition: transform 0.2s; display: inline-block; }
+    .toggle-icon.collapsed { transform: rotate(-90deg); }
+
+    .collapsible { display: block; }
+    .collapsible.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Anon Cart V1 Optimizations — Test Results</h1>
+      <p>Experiment: <code>specs.premium.AnonymousCart</code> &nbsp;|&nbsp; Entry: <code>wix.com/domain/result</code> &nbsp;|&nbsp; Run: May 7, 2026</p>
+    </header>
+
+    <div class="stats">
+      <div class="stat-card total">
+        <div class="number">28</div>
+        <div class="label">Total Tests</div>
+      </div>
+      <div class="stat-card pass">
+        <div class="number">21</div>
+        <div class="label">Passed</div>
+      </div>
+      <div class="stat-card fail">
+        <div class="number">7</div>
+        <div class="label">Failed</div>
+      </div>
+      <div class="stat-card rate">
+        <div class="number">75%</div>
+        <div class="label">Pass Rate</div>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" style="background: linear-gradient(90deg, #34c759 75%, #ff3b30 75%);"></div>
+    </div>
+
+    <!-- 1. Bundle Flow -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('bundle')">
+        <span><span class="toggle-icon" id="bundle-icon">▼</span> 1. Bundle Flow</span>
+        <span class="badge badge-pass">10/10 passed</span>
+      </div>
+      <div id="bundle" class="collapsible">
+        <table>
+          <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td>BF-1.1</td><td>Domain banner with CTA (no premium)</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Promo banner/CTA found</td></tr>
+          <tr><td>BF-1.2</td><td>CTA navigates to package picker</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Package picker loaded</td></tr>
+          <tr><td>BF-1.3</td><td>Banner content only (premium in cart)</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified via screenshot</td></tr>
+          <tr><td>BF-1.4</td><td>Privacy banner — privacy only TLD</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Privacy content visible</td></tr>
+          <tr><td>BF-1.5</td><td>Privacy banner — privacy + DNSSEC</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Privacy + DNSSEC visible</td></tr>
+          <tr><td>BF-2.1</td><td>Default cycle is 1 year</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">1 year: true, 3 year: false</td></tr>
+          <tr><td>BF-3.1</td><td>"Are you sure?" modal (domain in cart)</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>BF-3.2</td><td>Confirm removal removes premium</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>BF-3.3</td><td>Cancel removal keeps premium</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>BF-3.4</td><td>No modal without domain</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. Domain Only Flow -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('domain')">
+        <span><span class="toggle-icon" id="domain-icon">▼</span> 2. Domain Only Flow</span>
+        <span class="badge badge-mix">6/7 passed</span>
+      </div>
+      <div id="domain" class="collapsible">
+        <table>
+          <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td>DO-1.1</td><td>Default cycle is 1 year</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">1 year default confirmed</td></tr>
+          <tr><td>DO-1.2</td><td>Cycle unchanged after adding premium</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Before: 1yr, After: 1yr</td></tr>
+          <tr><td>DO-2.1</td><td>Free privacy NOT offered</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-bug">BUG</span></td><td class="finding finding-fail">Free privacy IS showing in domain-only flow</td></tr>
+          <tr><td>DO-3.1</td><td>Premium upsell visible</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Upsell component visible</td></tr>
+          <tr><td>DO-4.1</td><td>Domain promo banner with CTA</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>DO-4.2</td><td>Privacy banner — privacy only TLD</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Privacy content visible</td></tr>
+          <tr><td>DO-4.3</td><td>Privacy banner — privacy + DNSSEC</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Privacy + DNSSEC visible</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. Package Picker -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('picker')">
+        <span><span class="toggle-icon" id="picker-icon">▼</span> 3. Package Picker</span>
+        <span class="badge badge-fail">0/1 passed</span>
+      </div>
+      <div id="picker" class="collapsible">
+        <table>
+          <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td>PP-1.1</td><td>"Free domain 1yr" is first feature</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-bug">BUG</span></td><td class="finding finding-fail">First feature is "100 collaborators", not "Free domain"</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. Checkout -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('checkout')">
+        <span><span class="toggle-icon" id="checkout-icon">▼</span> 4. Checkout</span>
+        <span class="badge badge-mix">1/4 passed</span>
+      </div>
+      <div id="checkout" class="collapsible">
+        <table>
+          <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td>CO-1.1</td><td>Collapsed — item count only</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-not-impl">NOT IMPLEMENTED</span></td><td class="finding finding-fail">Summary shows full details by default, no collapsed state</td></tr>
+          <tr><td>CO-1.2</td><td>Expanded — full details visible</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Summary shows domain + privacy + cycle</td></tr>
+          <tr><td>CO-1.3</td><td>Toggle between states</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-not-impl">NOT IMPLEMENTED</span></td><td class="finding finding-fail">No toggle button — summary always expanded</td></tr>
+          <tr><td>CO-2.1</td><td>Expanded shows cycle, NOT price</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-not-impl">NOT IMPLEMENTED</span></td><td class="finding finding-fail">Prices displayed ($9.90, $12.90, $22.80 total)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 5. Split Page -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('split')">
+        <span><span class="toggle-icon" id="split-icon">▼</span> 5. Split Page</span>
+        <span class="badge badge-mix">1/2 passed</span>
+      </div>
+      <div id="split" class="collapsible">
+        <table>
+          <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td>SP-1.1</td><td>New split page rendered</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-not-impl">NOT IMPLEMENTED</span></td><td class="finding finding-fail">New split page not rendering with experiment</td></tr>
+          <tr><td>SP-1.2</td><td>Old layout replaced</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 6. Content & UI -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('content')">
+        <span><span class="toggle-icon" id="content-icon">▼</span> 6. Content & UI Improvements</span>
+        <span class="badge badge-pass">2/2 passed</span>
+      </div>
+      <div id="content" class="collapsible">
+        <table>
+          <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td>CU-1.1</td><td>Updated subtitle copy</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Headings captured</td></tr>
+          <tr><td>CU-2.1</td><td>Purple section references Harmony</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 7. Skip Contact Info -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('contact')">
+        <span><span class="toggle-icon" id="contact-icon">▼</span> 7. Skip Contact Info Step</span>
+        <span class="badge badge-pass">2/2 passed</span>
+      </div>
+      <div id="contact" class="collapsible">
+        <table>
+          <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td>SCI-1.1</td><td>gTLD + no payment → show contact info</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>SCI-1.4</td><td>ccTLD → always show contact info</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Issues Summary -->
+    <div class="section" style="border-left: 4px solid #ff3b30;">
+      <div class="section-header">
+        <span>Issues Found</span>
+      </div>
+      <table>
+        <tr><th>#</th><th>Test</th><th>Type</th><th>Description</th></tr>
+        <tr><td>1</td><td>DO-2.1</td><td><span class="tag tag-bug">BUG</span></td><td>Free privacy IS showing in domain-only flow — CDD says remove it</td></tr>
+        <tr><td>2</td><td>PP-1.1</td><td><span class="tag tag-bug">BUG</span></td><td>"Free domain for 1 year" is NOT first feature — "100 collaborators" appears first</td></tr>
+        <tr><td>3</td><td>CO-1.1</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>No collapsed state — order summary shows full details by default</td></tr>
+        <tr><td>4</td><td>CO-1.3</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>No toggle button — summary always expanded</td></tr>
+        <tr><td>5</td><td>CO-2.1</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>Prices displayed in summary — CDD says show cycle only</td></tr>
+        <tr><td>6</td><td>SP-1.1</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>New split page not rendering with experiment</td></tr>
+      </table>
+    </div>
+
+    <div class="footer">
+      Generated by QA Automation &nbsp;|&nbsp; Guy Meir &nbsp;|&nbsp; Domains Team &nbsp;|&nbsp; May 7, 2026
+    </div>
+  </div>
+
+  <script>
+    function toggle(id) {
+      const el = document.getElementById(id);
+      const icon = document.getElementById(id + '-icon');
+      el.classList.toggle('hidden');
+      if (icon) icon.classList.toggle('collapsed');
+    }
+  </script>
+</body>
+</html>
