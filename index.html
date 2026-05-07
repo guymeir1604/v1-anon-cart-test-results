@@ -249,16 +249,73 @@
       </div>
     </div>
 
-    <!-- Issues Summary -->
+    <!-- Issues Summary with Root Cause & Fix -->
     <div class="section" style="border-left: 4px solid #ff3b30;">
-      <div class="section-header"><span>Issues Found (4)</span></div>
-      <table>
-        <tr><th>#</th><th>Test</th><th>Type</th><th>Description</th><th>Evidence</th></tr>
-        <tr><td>1</td><td>DO-2.1</td><td><span class="tag tag-bug">BUG</span></td><td>Free privacy IS showing in domain-only flow</td><td><span class="screenshot-btn" onclick="openModal('modal-do21')">Screenshot</span></td></tr>
-        <tr><td>2</td><td>PP-1.1</td><td><span class="tag tag-bug">BUG</span></td><td>"Free domain for 1 year" is NOT first feature</td><td><span class="screenshot-btn" onclick="openModal('modal-pp11')">Screenshot</span></td></tr>
-        <tr><td>3</td><td>CO-1.3</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>Toggle button disabled on checkout page</td><td><span class="screenshot-btn" onclick="openModal('modal-co13')">Screenshot</span></td></tr>
-        <tr><td>4</td><td>CO-2.1</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>Prices displayed in summary (CDD: cycle only)</td><td><span class="screenshot-btn" onclick="openModal('modal-co13')">Screenshot</span></td></tr>
-      </table>
+      <div class="section-header"><span>Issues Found (4) — Root Cause Analysis</span></div>
+
+      <!-- Issue 1 -->
+      <div style="padding: 16px 20px; border-bottom: 1px solid #f0f0f0;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>DO-2.1</strong> <span class="tag tag-bug">BUG</span>
+            <span style="margin-left: 8px; font-size: 14px;">Free privacy IS showing in domain-only flow</span>
+          </div>
+          <span class="screenshot-btn" onclick="openModal('modal-do21')">View Screenshot</span>
+        </div>
+        <div style="margin-top: 10px; padding: 12px; background: #fff8f8; border-radius: 8px; font-size: 13px;">
+          <div style="margin-bottom: 6px;"><strong>Root Cause:</strong> Privacy pricing logic applies "free forever" to ALL anonymous flows without distinguishing domain-only vs bundle. The free privacy eligibility check doesn't filter by flow type.</div>
+          <div style="margin-bottom: 6px;"><strong>Location:</strong> <code>premium-store-core/.../PremiumStoreModelBuilder.scala</code> — privacy pricing enrichment</div>
+          <div><strong>Suggested Fix:</strong> Add a flow-type condition to the privacy pricing logic. When <code>flowType == DOMAIN_ONLY</code>, skip the free privacy override and use the standard price. The flow type is available in the cart context from the storefront referral info.</div>
+        </div>
+      </div>
+
+      <!-- Issue 2 -->
+      <div style="padding: 16px 20px; border-bottom: 1px solid #f0f0f0;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>PP-1.1</strong> <span class="tag tag-bug">BUG</span>
+            <span style="margin-left: 8px; font-size: 14px;">"Free domain for 1 year" is NOT first feature on plan cards</span>
+          </div>
+          <span class="screenshot-btn" onclick="openModal('modal-pp11')">View Screenshot</span>
+        </div>
+        <div style="margin-top: 10px; padding: 12px; background: #fff8f8; border-radius: 8px; font-size: 13px;">
+          <div style="margin-bottom: 6px;"><strong>Root Cause:</strong> Plan card features list order is controlled by the product catalog configuration. Currently "100 collaborators" is first. The "Free domain for 1 year" feature exists in the list but is not prioritized to position 1.</div>
+          <div style="margin-bottom: 6px;"><strong>Location:</strong> <code>premium-product-catalog/</code> — feature ordering config, or Eclipse SDK package picker <code>FeaturesGrid</code> component</div>
+          <div><strong>Suggested Fix:</strong> Update the features sort order in the product catalog to place the "Free domain for 1 year" benefit at index 0 for all plan cards. This may be a CMS/config change in the package picker content, or a frontend sort in the <code>FeaturesGrid</code> component.</div>
+        </div>
+      </div>
+
+      <!-- Issue 3 -->
+      <div style="padding: 16px 20px; border-bottom: 1px solid #f0f0f0;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>CO-1.3</strong> <span class="tag tag-not-impl">NOT IMPL</span>
+            <span style="margin-left: 8px; font-size: 14px;">Toggle button disabled on checkout page</span>
+          </div>
+          <span class="screenshot-btn" onclick="openModal('modal-co13')">View Screenshot</span>
+        </div>
+        <div style="margin-top: 10px; padding: 12px; background: #fff8f0; border-radius: 8px; font-size: 13px;">
+          <div style="margin-bottom: 6px;"><strong>Root Cause:</strong> The checkout order summary currently has no collapse/expand toggle. The summary is always in expanded state showing full item details. The CDD requirement for collapsed (item count only) / expanded (details) states has not been implemented yet.</div>
+          <div style="margin-bottom: 6px;"><strong>Location:</strong> Checkout summary component (FED code — likely in <code>premium-domains</code> or Eclipse checkout module)</div>
+          <div><strong>Suggested Fix:</strong> Implement a toggle on the order summary component. Default state should be collapsed (show only item count, e.g. "2 items"). On click, expand to show full details. The cart state machine should track <code>summaryExpanded: boolean</code>.</div>
+        </div>
+      </div>
+
+      <!-- Issue 4 -->
+      <div style="padding: 16px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>CO-2.1</strong> <span class="tag tag-not-impl">NOT IMPL</span>
+            <span style="margin-left: 8px; font-size: 14px;">Prices displayed in summary — CDD says show cycle only</span>
+          </div>
+          <span class="screenshot-btn" onclick="openModal('modal-co13')">View Screenshot</span>
+        </div>
+        <div style="margin-top: 10px; padding: 12px; background: #fff8f0; border-radius: 8px; font-size: 13px;">
+          <div style="margin-bottom: 6px;"><strong>Root Cause:</strong> The checkout summary renders item prices ($9.90, $12.90, Total $22.80) in the expanded view. CDD requirement states expanded items should show billing cycle only (e.g. "1 year") without price.</div>
+          <div style="margin-bottom: 6px;"><strong>Location:</strong> <code>premium-store-core/.../PremiumPricesService.scala</code> (BED) or checkout summary FED component</div>
+          <div><strong>Suggested Fix:</strong> In the checkout summary expanded view, hide price fields and show only the billing cycle text. Either strip price fields from the API response for checkout context, or conditionally hide price in the FED component when rendering expanded summary items.</div>
+        </div>
+      </div>
     </div>
 
     <div class="footer">
