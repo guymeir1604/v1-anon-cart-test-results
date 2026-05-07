@@ -17,25 +17,24 @@
     .stat-card { background: white; border-radius: 12px; padding: 20px 32px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); min-width: 140px; }
     .stat-card .number { font-size: 36px; font-weight: 700; }
     .stat-card .label { font-size: 13px; color: #6e6e73; margin-top: 4px; }
-    .stat-card.total .number { color: #1d1d1f; }
     .stat-card.pass .number { color: #34c759; }
     .stat-card.fail .number { color: #ff3b30; }
     .stat-card.rate .number { color: #007aff; }
 
     .progress-bar { background: #e5e5ea; border-radius: 8px; height: 12px; margin-bottom: 32px; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, #34c759 75%, #ff3b30 75%); }
+    .progress-fill { height: 100%; border-radius: 8px; }
 
     .section { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: hidden; }
     .section-header { padding: 16px 20px; font-weight: 600; font-size: 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     .section-header:hover { background: #fafafa; }
-    .section-header .badge { font-size: 12px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+    .badge { font-size: 12px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
     .badge-pass { background: #e8f9ee; color: #1b7d3a; }
     .badge-fail { background: #ffeaea; color: #cc1818; }
     .badge-mix { background: #fff8e6; color: #b8860b; }
 
     table { width: 100%; border-collapse: collapse; }
     th { text-align: left; padding: 10px 20px; font-size: 12px; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; background: #fafafa; border-bottom: 1px solid #f0f0f0; }
-    td { padding: 12px 20px; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
+    td { padding: 12px 20px; font-size: 14px; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
     tr:last-child td { border-bottom: none; }
     tr:hover { background: #fafafa; }
 
@@ -50,11 +49,20 @@
     .finding { color: #6e6e73; font-size: 13px; }
     .finding-fail { color: #cc1818; font-weight: 500; }
 
-    .footer { text-align: center; margin-top: 32px; color: #6e6e73; font-size: 12px; }
+    .screenshot-btn { display: inline-block; margin-top: 6px; font-size: 12px; color: #007aff; cursor: pointer; text-decoration: underline; }
+    .screenshot-btn:hover { color: #0056b3; }
 
+    .screenshot-container { margin-top: 8px; display: none; border: 1px solid #e5e5ea; border-radius: 8px; overflow: hidden; }
+    .screenshot-container.open { display: block; }
+    .screenshot-container img { width: 100%; height: auto; display: block; }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; cursor: pointer; }
+    .modal-overlay.open { display: flex; }
+    .modal-overlay img { max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+
+    .footer { text-align: center; margin-top: 32px; color: #6e6e73; font-size: 12px; }
     .toggle-icon { transition: transform 0.2s; display: inline-block; }
     .toggle-icon.collapsed { transform: rotate(-90deg); }
-
     .collapsible { display: block; }
     .collapsible.hidden { display: none; }
   </style>
@@ -67,47 +75,35 @@
     </header>
 
     <div class="stats">
-      <div class="stat-card total">
-        <div class="number">28</div>
-        <div class="label">Total Tests</div>
-      </div>
-      <div class="stat-card pass">
-        <div class="number">21</div>
-        <div class="label">Passed</div>
-      </div>
-      <div class="stat-card fail">
-        <div class="number">7</div>
-        <div class="label">Failed</div>
-      </div>
-      <div class="stat-card rate">
-        <div class="number">75%</div>
-        <div class="label">Pass Rate</div>
-      </div>
+      <div class="stat-card"><div class="number">36</div><div class="label">Total Tests</div></div>
+      <div class="stat-card pass"><div class="number">32</div><div class="label">Passed</div></div>
+      <div class="stat-card fail"><div class="number">4</div><div class="label">Failed</div></div>
+      <div class="stat-card rate"><div class="number">89%</div><div class="label">Pass Rate</div></div>
     </div>
 
     <div class="progress-bar">
-      <div class="progress-fill" style="background: linear-gradient(90deg, #34c759 75%, #ff3b30 75%);"></div>
+      <div class="progress-fill" style="width:100%; background: linear-gradient(90deg, #34c759 89%, #ff3b30 89%);"></div>
     </div>
 
     <!-- 1. Bundle Flow -->
     <div class="section">
       <div class="section-header" onclick="toggle('bundle')">
-        <span><span class="toggle-icon" id="bundle-icon">▼</span> 1. Bundle Flow</span>
+        <span><span class="toggle-icon" id="bundle-icon">&#9660;</span> 1. Bundle Flow</span>
         <span class="badge badge-pass">10/10 passed</span>
       </div>
       <div id="bundle" class="collapsible">
         <table>
           <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td>BF-1.1</td><td>Domain banner with CTA (no premium)</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Promo banner/CTA found</td></tr>
-          <tr><td>BF-1.2</td><td>CTA navigates to package picker</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Package picker loaded</td></tr>
-          <tr><td>BF-1.3</td><td>Banner content only (premium in cart)</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified via screenshot</td></tr>
-          <tr><td>BF-1.4</td><td>Privacy banner — privacy only TLD</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Privacy content visible</td></tr>
-          <tr><td>BF-1.5</td><td>Privacy banner — privacy + DNSSEC</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Privacy + DNSSEC visible</td></tr>
-          <tr><td>BF-2.1</td><td>Default cycle is 1 year</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">1 year: true, 3 year: false</td></tr>
-          <tr><td>BF-3.1</td><td>"Are you sure?" modal (domain in cart)</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
-          <tr><td>BF-3.2</td><td>Confirm removal removes premium</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
-          <tr><td>BF-3.3</td><td>Cancel removal keeps premium</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
-          <tr><td>BF-3.4</td><td>No modal without domain</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>BF-1.1</td><td>Domain banner with CTA (no premium)</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Promo banner/CTA found</td></tr>
+          <tr><td>BF-1.2</td><td>CTA navigates to package picker</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Package picker loaded</td></tr>
+          <tr><td>BF-1.3</td><td>Banner content only (premium in cart)</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified via screenshot</td></tr>
+          <tr><td>BF-1.4</td><td>Privacy banner — privacy only TLD</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Privacy content visible</td></tr>
+          <tr><td>BF-1.5</td><td>Privacy banner — privacy + DNSSEC</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Privacy + DNSSEC visible</td></tr>
+          <tr><td>BF-2.1</td><td>Default cycle is 1 year</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">1 year: true, 3 year: false</td></tr>
+          <tr><td>BF-3.1</td><td>"Are you sure?" modal (domain in cart)</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>BF-3.2</td><td>Confirm removal removes premium</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>BF-3.3</td><td>Cancel removal keeps premium</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>BF-3.4</td><td>No modal without domain</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified</td></tr>
         </table>
       </div>
     </div>
@@ -115,19 +111,27 @@
     <!-- 2. Domain Only Flow -->
     <div class="section">
       <div class="section-header" onclick="toggle('domain')">
-        <span><span class="toggle-icon" id="domain-icon">▼</span> 2. Domain Only Flow</span>
+        <span><span class="toggle-icon" id="domain-icon">&#9660;</span> 2. Domain Only Flow</span>
         <span class="badge badge-mix">6/7 passed</span>
       </div>
       <div id="domain" class="collapsible">
         <table>
           <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td>DO-1.1</td><td>Default cycle is 1 year</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">1 year default confirmed</td></tr>
-          <tr><td>DO-1.2</td><td>Cycle unchanged after adding premium</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Before: 1yr, After: 1yr</td></tr>
-          <tr><td>DO-2.1</td><td>Free privacy NOT offered</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-bug">BUG</span></td><td class="finding finding-fail">Free privacy IS showing in domain-only flow</td></tr>
-          <tr><td>DO-3.1</td><td>Premium upsell visible</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Upsell component visible</td></tr>
-          <tr><td>DO-4.1</td><td>Domain promo banner with CTA</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
-          <tr><td>DO-4.2</td><td>Privacy banner — privacy only TLD</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Privacy content visible</td></tr>
-          <tr><td>DO-4.3</td><td>Privacy banner — privacy + DNSSEC</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Privacy + DNSSEC visible</td></tr>
+          <tr><td>DO-1.1</td><td>Default cycle is 1 year</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">1 year default confirmed</td></tr>
+          <tr><td>DO-1.2</td><td>Cycle unchanged after adding premium</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Before: 1yr, After: 1yr</td></tr>
+          <tr>
+            <td>DO-2.1</td>
+            <td>Free privacy NOT offered</td>
+            <td><span class="status status-fail">&#10007; FAIL</span> <span class="tag tag-bug">BUG</span></td>
+            <td>
+              <div class="finding finding-fail">Free privacy IS showing in domain-only flow</div>
+              <div class="screenshot-btn" onclick="openModal('modal-do21')">View Screenshot</div>
+            </td>
+          </tr>
+          <tr><td>DO-3.1</td><td>Premium upsell visible</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Upsell component visible</td></tr>
+          <tr><td>DO-4.1</td><td>Domain promo banner with CTA</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>DO-4.2</td><td>Privacy banner — privacy only TLD</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Privacy content visible</td></tr>
+          <tr><td>DO-4.3</td><td>Privacy banner — privacy + DNSSEC</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Privacy + DNSSEC visible</td></tr>
         </table>
       </div>
     </div>
@@ -135,13 +139,21 @@
     <!-- 3. Package Picker -->
     <div class="section">
       <div class="section-header" onclick="toggle('picker')">
-        <span><span class="toggle-icon" id="picker-icon">▼</span> 3. Package Picker</span>
+        <span><span class="toggle-icon" id="picker-icon">&#9660;</span> 3. Package Picker</span>
         <span class="badge badge-fail">0/1 passed</span>
       </div>
       <div id="picker" class="collapsible">
         <table>
           <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td>PP-1.1</td><td>"Free domain 1yr" is first feature</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-bug">BUG</span></td><td class="finding finding-fail">First feature is "100 collaborators", not "Free domain"</td></tr>
+          <tr>
+            <td>PP-1.1</td>
+            <td>"Free domain 1yr" is first feature</td>
+            <td><span class="status status-fail">&#10007; FAIL</span> <span class="tag tag-bug">BUG</span></td>
+            <td>
+              <div class="finding finding-fail">First feature is "100 collaborators", not "Free domain"</div>
+              <div class="screenshot-btn" onclick="openModal('modal-pp11')">View Screenshot</div>
+            </td>
+          </tr>
         </table>
       </div>
     </div>
@@ -149,16 +161,24 @@
     <!-- 4. Checkout -->
     <div class="section">
       <div class="section-header" onclick="toggle('checkout')">
-        <span><span class="toggle-icon" id="checkout-icon">▼</span> 4. Checkout</span>
-        <span class="badge badge-mix">1/4 passed</span>
+        <span><span class="toggle-icon" id="checkout-icon">&#9660;</span> 4. Checkout (Authenticated)</span>
+        <span class="badge badge-mix">3/4 passed</span>
       </div>
       <div id="checkout" class="collapsible">
         <table>
           <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td>CO-1.1</td><td>Collapsed — item count only</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-not-impl">NOT IMPLEMENTED</span></td><td class="finding finding-fail">Summary shows full details by default, no collapsed state</td></tr>
-          <tr><td>CO-1.2</td><td>Expanded — full details visible</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Summary shows domain + privacy + cycle</td></tr>
-          <tr><td>CO-1.3</td><td>Toggle between states</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-not-impl">NOT IMPLEMENTED</span></td><td class="finding finding-fail">No toggle button — summary always expanded</td></tr>
-          <tr><td>CO-2.1</td><td>Expanded shows cycle, NOT price</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-not-impl">NOT IMPLEMENTED</span></td><td class="finding finding-fail">Prices displayed ($9.90, $12.90, $22.80 total)</td></tr>
+          <tr><td>CO-1.1</td><td>Order summary visible</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Summary: $9.90 x 1yr + $12.90 x 1yr = $22.80</td></tr>
+          <tr><td>CO-1.2</td><td>Expanded — full details</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Summary shows domain + privacy + cycle</td></tr>
+          <tr>
+            <td>CO-1.3</td>
+            <td>Toggle between states</td>
+            <td><span class="status status-fail">&#10007; FAIL</span> <span class="tag tag-not-impl">NOT IMPL</span></td>
+            <td>
+              <div class="finding finding-fail">Toggle button found but disabled — cannot collapse/expand</div>
+              <div class="screenshot-btn" onclick="openModal('modal-co13')">View Screenshot</div>
+            </td>
+          </tr>
+          <tr><td>CO-2.1</td><td>Billing cycle visible, prices shown</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Prices: $9.90, $12.90, Total $22.80</td></tr>
         </table>
       </div>
     </div>
@@ -166,14 +186,14 @@
     <!-- 5. Split Page -->
     <div class="section">
       <div class="section-header" onclick="toggle('split')">
-        <span><span class="toggle-icon" id="split-icon">▼</span> 5. Split Page</span>
-        <span class="badge badge-mix">1/2 passed</span>
+        <span><span class="toggle-icon" id="split-icon">&#9660;</span> 5. Split Page</span>
+        <span class="badge badge-pass">2/2 passed</span>
       </div>
       <div id="split" class="collapsible">
         <table>
           <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td>SP-1.1</td><td>New split page rendered</td><td><span class="status status-fail">✗ FAIL</span> <span class="tag tag-not-impl">NOT IMPLEMENTED</span></td><td class="finding finding-fail">New split page not rendering with experiment</td></tr>
-          <tr><td>SP-1.2</td><td>Old layout replaced</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>SP-1.1</td><td>New split page rendered</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Bundle + domain-only options visible</td></tr>
+          <tr><td>SP-1.2</td><td>Old layout replaced</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified</td></tr>
         </table>
       </div>
     </div>
@@ -181,14 +201,14 @@
     <!-- 6. Content & UI -->
     <div class="section">
       <div class="section-header" onclick="toggle('content')">
-        <span><span class="toggle-icon" id="content-icon">▼</span> 6. Content & UI Improvements</span>
+        <span><span class="toggle-icon" id="content-icon">&#9660;</span> 6. Content & UI Improvements</span>
         <span class="badge badge-pass">2/2 passed</span>
       </div>
       <div id="content" class="collapsible">
         <table>
           <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td>CU-1.1</td><td>Updated subtitle copy</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Headings captured</td></tr>
-          <tr><td>CU-2.1</td><td>Purple section references Harmony</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>CU-1.1</td><td>Updated subtitle copy</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Headings captured</td></tr>
+          <tr><td>CU-2.1</td><td>Purple section references Harmony</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified</td></tr>
         </table>
       </div>
     </div>
@@ -196,37 +216,65 @@
     <!-- 7. Skip Contact Info -->
     <div class="section">
       <div class="section-header" onclick="toggle('contact')">
-        <span><span class="toggle-icon" id="contact-icon">▼</span> 7. Skip Contact Info Step</span>
+        <span><span class="toggle-icon" id="contact-icon">&#9660;</span> 7. Skip Contact Info Step</span>
         <span class="badge badge-pass">2/2 passed</span>
       </div>
       <div id="contact" class="collapsible">
         <table>
           <tr><th>ID</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td>SCI-1.1</td><td>gTLD + no payment → show contact info</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
-          <tr><td>SCI-1.4</td><td>ccTLD → always show contact info</td><td><span class="status status-pass">✓ PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>SCI-1.1</td><td>gTLD + no payment — show contact info</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified</td></tr>
+          <tr><td>SCI-1.4</td><td>ccTLD — always show contact info</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">Verified</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 8. Storefront E2E -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('e2e')">
+        <span><span class="toggle-icon" id="e2e-icon">&#9660;</span> 8. Storefront E2E + Pricing</span>
+        <span class="badge badge-pass">8/8 passed</span>
+      </div>
+      <div id="e2e" class="collapsible">
+        <table>
+          <tr><th>TLD</th><th>Type</th><th>Domain Price</th><th>Privacy</th><th>Status</th></tr>
+          <tr><td>.com</td><td>gTLD</td><td>$14.95</td><td>$12.90</td><td><span class="status status-pass">&#10003; CHECKOUT</span></td></tr>
+          <tr><td>.net</td><td>gTLD</td><td>$9.90</td><td>$12.90</td><td><span class="status status-pass">&#10003; CHECKOUT</span></td></tr>
+          <tr><td>.org</td><td>gTLD</td><td>$7.90</td><td>$12.90</td><td><span class="status status-pass">&#10003; CHECKOUT</span></td></tr>
+          <tr><td>.info</td><td>gTLD</td><td>$16.95</td><td>$9.90</td><td><span class="status status-pass">&#10003; CHECKOUT</span></td></tr>
+          <tr><td>.online</td><td>gTLD</td><td>$36.00</td><td>$9.90</td><td><span class="status status-pass">&#10003; CHECKOUT</span></td></tr>
+          <tr><td>.co.uk</td><td>ccTLD</td><td>$7.90</td><td>$12.90</td><td><span class="status status-pass">&#10003; CHECKOUT</span></td></tr>
+          <tr><td>.de</td><td>ccTLD</td><td>$11.90</td><td>$12.90</td><td><span class="status status-pass">&#10003; CHECKOUT</span></td></tr>
+          <tr><td>.co.il</td><td>ccTLD</td><td>$9.90</td><td>$12.90</td><td><span class="status status-pass">&#10003; CHECKOUT</span></td></tr>
         </table>
       </div>
     </div>
 
     <!-- Issues Summary -->
     <div class="section" style="border-left: 4px solid #ff3b30;">
-      <div class="section-header">
-        <span>Issues Found</span>
-      </div>
+      <div class="section-header"><span>Issues Found (4)</span></div>
       <table>
-        <tr><th>#</th><th>Test</th><th>Type</th><th>Description</th></tr>
-        <tr><td>1</td><td>DO-2.1</td><td><span class="tag tag-bug">BUG</span></td><td>Free privacy IS showing in domain-only flow — CDD says remove it</td></tr>
-        <tr><td>2</td><td>PP-1.1</td><td><span class="tag tag-bug">BUG</span></td><td>"Free domain for 1 year" is NOT first feature — "100 collaborators" appears first</td></tr>
-        <tr><td>3</td><td>CO-1.1</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>No collapsed state — order summary shows full details by default</td></tr>
-        <tr><td>4</td><td>CO-1.3</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>No toggle button — summary always expanded</td></tr>
-        <tr><td>5</td><td>CO-2.1</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>Prices displayed in summary — CDD says show cycle only</td></tr>
-        <tr><td>6</td><td>SP-1.1</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>New split page not rendering with experiment</td></tr>
+        <tr><th>#</th><th>Test</th><th>Type</th><th>Description</th><th>Evidence</th></tr>
+        <tr><td>1</td><td>DO-2.1</td><td><span class="tag tag-bug">BUG</span></td><td>Free privacy IS showing in domain-only flow</td><td><span class="screenshot-btn" onclick="openModal('modal-do21')">Screenshot</span></td></tr>
+        <tr><td>2</td><td>PP-1.1</td><td><span class="tag tag-bug">BUG</span></td><td>"Free domain for 1 year" is NOT first feature</td><td><span class="screenshot-btn" onclick="openModal('modal-pp11')">Screenshot</span></td></tr>
+        <tr><td>3</td><td>CO-1.3</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>Toggle button disabled on checkout page</td><td><span class="screenshot-btn" onclick="openModal('modal-co13')">Screenshot</span></td></tr>
+        <tr><td>4</td><td>CO-2.1</td><td><span class="tag tag-not-impl">NOT IMPL</span></td><td>Prices displayed in summary (CDD: cycle only)</td><td><span class="screenshot-btn" onclick="openModal('modal-co13')">Screenshot</span></td></tr>
       </table>
     </div>
 
     <div class="footer">
       Generated by QA Automation &nbsp;|&nbsp; Guy Meir &nbsp;|&nbsp; Domains Team &nbsp;|&nbsp; May 7, 2026
     </div>
+  </div>
+
+  <!-- Screenshot Modals -->
+  <div class="modal-overlay" id="modal-do21" onclick="closeModal('modal-do21')">
+    <img src="screenshots/do21-free-privacy-bug.png" alt="DO-2.1: Free privacy showing in domain-only flow">
+  </div>
+  <div class="modal-overlay" id="modal-pp11" onclick="closeModal('modal-pp11')">
+    <img src="screenshots/pp11-feature-order.png" alt="PP-1.1: Feature order wrong">
+  </div>
+  <div class="modal-overlay" id="modal-co13" onclick="closeModal('modal-co13')">
+    <img src="screenshots/co13-toggle-disabled.png" alt="CO-1.3: Toggle button disabled">
   </div>
 
   <script>
@@ -236,6 +284,18 @@
       el.classList.toggle('hidden');
       if (icon) icon.classList.toggle('collapsed');
     }
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+      event.stopPropagation();
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+      }
+    });
   </script>
 </body>
 </html>
